@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160413144859) do
+ActiveRecord::Schema.define(version: 20160518144748) do
 
   create_table "routers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "ssid"
@@ -23,18 +23,21 @@ ActiveRecord::Schema.define(version: 20160413144859) do
   create_table "user_profiles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "user_id"
     t.string   "first_name"
+    t.string   "middle_name"
     t.string   "last_name"
-    t.string   "photo"
-    t.string   "bg_photo"
+    t.string   "fb_link"
+    t.string   "email"
+    t.string   "picture"
+    t.integer  "gender",      limit: 1, default: 0
+    t.integer  "age_min"
+    t.integer  "age_max"
+    t.string   "bg_picture"
     t.string   "about_me"
-    t.integer  "age"
     t.date     "birthday"
-    t.string   "gender"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.index ["user_id"], name: "index_user_profiles_on_user_id", using: :btree
   end
-
-  add_index "user_profiles", ["user_id"], name: "index_user_profiles_on_user_id", using: :btree
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "fb_user_id"
@@ -47,11 +50,10 @@ ActiveRecord::Schema.define(version: 20160413144859) do
     t.decimal  "longitude",        precision: 18, scale: 15
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+    t.index ["fb_access_token"], name: "index_users_on_fb_access_token", unique: true, using: :btree
+    t.index ["fb_user_id"], name: "index_users_on_fb_user_id", unique: true, using: :btree
+    t.index ["router_id"], name: "index_users_on_router_id", using: :btree
   end
-
-  add_index "users", ["fb_access_token"], name: "index_users_on_fb_access_token", unique: true, using: :btree
-  add_index "users", ["fb_user_id"], name: "index_users_on_fb_user_id", unique: true, using: :btree
-  add_index "users", ["router_id"], name: "index_users_on_router_id", using: :btree
 
   add_foreign_key "user_profiles", "users"
   add_foreign_key "users", "routers"

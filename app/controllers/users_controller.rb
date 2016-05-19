@@ -9,8 +9,10 @@ class UsersController < ApplicationController
   end
 
   def current_network_users
-    @users = @user.router.users
-                 .select(:id, :local_ip, :local_port, :external_address, :latitude, :longitude)
+    @users = @user.router.users.joins(:user_profile)
+                 .select(:local_ip, :local_port, :external_address, :latitude, :longitude,
+                         'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
+                         'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
                  .where.not(id: @user.id)
 
     render json: @users
@@ -21,8 +23,10 @@ class UsersController < ApplicationController
     if router.nil?
       @users = []
     else
-      @users = router.users
-                   .select(:id, :local_ip, :local_port, :external_address, :latitude, :longitude)
+      @users = router.users.joins(:user_profile)
+                   .select(:local_ip, :local_port, :external_address, :latitude, :longitude,
+                           'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
+                           'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
     end
 
     render json: @users
@@ -35,10 +39,17 @@ class UsersController < ApplicationController
 
   # POST /users
   def create
-    @user = User.new(user_params)
+    @params = user_params
+    @user = User.new(@params)
+    set_user_router
+
+    unless @user.valid?
+      user = User.find_by(@params[:fb_user_id])
+      redirect_to user and return
+    end
 
     if @user.save
-      render json: @user, status: :created, location: @user
+      render status: :created, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -46,15 +57,12 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1
   def update
-    params = user_params
-    router = Router.find_by(mac_address: params[:router_attributes][:mac_address])
-    unless router.nil?
-      params.delete(:router_attributes)
-      @user.router = router
-    end
+    @params = user_params
+    set_user_router
+    set_gender_index unless @params[:user_profile_attributes].nil? or @params[:user_profile_attributes][:gender].nil?
 
-    if @user.update(params)
-      render json: @user
+    if @user.update(@params)
+      render status: :no_content # json: @user
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -68,15 +76,40 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      @user = User.find_by(id: params[:id])
+      @user = User.find_by(fb_user_id: params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.
     def user_params
       params.require(:user).permit(:fb_user_id, :fb_access_token, :router_id, :local_ip, :local_port, :external_address,
                                    :latitude, :longitude,
-                                   user_profile_attributes: [:first_name, :last_name, :photo, :bg_photo,
-                                                             :about_me, :age, :birthday, :gender],
+                                   user_profile_attributes: [:first_name, :middle_name, :last_name,
+                                                             :fb_link, :email, :picture, :gender,
+                                                             :age_min, :age_max,
+                                                             :bg_picture, :about_me, :birthday],
                                    router_attributes: [:ssid, :mac_address])
+    end
+
+    def set_user_router
+      return if @params[:router_attributes].nil? or @params[:router_attributes][:mac_address].nil?
+
+      router = Router.find_by(mac_address: @params[:router_attributes][:mac_address])
+      unless router.nil?
+        @params.delete(:router_attributes)
+        @user.router = router
+      end
+    end
+
+    def set_gender_index
+      gender = @params[:user_profile_attributes][:gender]
+      if gender.to_s == 'male'
+        gender = 1
+      elsif gender.to_s == 'female'
+        gender = 2
+      else
+        gender = 0
+      end
+
+      @params[:user_profile_attributes][:gender] = gender
     end
 end
