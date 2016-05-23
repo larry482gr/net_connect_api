@@ -10,7 +10,7 @@ class UsersController < ApplicationController
 
   def current_network_users
     @users = @user.router.users.joins(:user_profile)
-                 .select(:local_ip, :local_port, :external_address, :latitude, :longitude,
+                 .select(:fb_user_id, :local_ip, :local_port, :external_address, :latitude, :longitude,
                          'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
                          'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
                  .where.not(id: @user.id)
@@ -24,7 +24,7 @@ class UsersController < ApplicationController
       @users = []
     else
       @users = router.users.joins(:user_profile)
-                   .select(:local_ip, :local_port, :external_address, :latitude, :longitude,
+                   .select(:fb_user_id, :local_ip, :local_port, :external_address, :latitude, :longitude,
                            'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
                            'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
     end
@@ -59,7 +59,6 @@ class UsersController < ApplicationController
   def update
     @params = user_params
     set_user_router
-    set_gender_index unless @params[:user_profile_attributes].nil? or @params[:user_profile_attributes][:gender].nil?
 
     if @user.update(@params)
       render status: :no_content # json: @user
@@ -98,18 +97,5 @@ class UsersController < ApplicationController
         @params.delete(:router_attributes)
         @user.router = router
       end
-    end
-
-    def set_gender_index
-      gender = @params[:user_profile_attributes][:gender]
-      if gender.to_s == 'male'
-        gender = 1
-      elsif gender.to_s == 'female'
-        gender = 2
-      else
-        gender = 0
-      end
-
-      @params[:user_profile_attributes][:gender] = gender
     end
 end
