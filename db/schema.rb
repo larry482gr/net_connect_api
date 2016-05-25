@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 20160518144748) do
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string   "api_token"
     t.string   "fb_user_id"
     t.string   "fb_access_token"
     t.integer  "router_id"
@@ -50,6 +51,7 @@ ActiveRecord::Schema.define(version: 20160518144748) do
     t.decimal  "longitude",        precision: 18, scale: 15
     t.datetime "created_at",                                 null: false
     t.datetime "updated_at",                                 null: false
+    t.index ["api_token"], name: "index_users_on_api_token", unique: true, using: :btree
     t.index ["fb_access_token"], name: "index_users_on_fb_access_token", unique: true, using: :btree
     t.index ["fb_user_id"], name: "index_users_on_fb_user_id", unique: true, using: :btree
     t.index ["router_id"], name: "index_users_on_router_id", using: :btree

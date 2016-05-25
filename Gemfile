@@ -20,6 +20,9 @@ gem 'puma'
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
+# To protect our API from DDoS, brute force attacks, hammering, or even to monetize with paid usage limits
+gem 'rack-attack'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
