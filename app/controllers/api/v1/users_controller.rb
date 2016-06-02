@@ -47,7 +47,7 @@ module Api::V1
 
       unless @user.valid?
         user = User.find_by(@params[:fb_user_id])
-        redirect_to v1_user_path(user.id) and return
+        render json: user, status: :ok, location: v1_user_path(user.id) and return
       end
 
       if @user.save
@@ -74,6 +74,22 @@ module Api::V1
       @current_user.destroy
     end
 
+    # POST /users/service_ping
+    def service_ping
+      @params = user_params
+      set_user_router (@current_user)
+
+      @service_ping = ServicePing.new(@params)
+      @service_ping.user = @current_user
+      @service_ping.router = @current_user.router
+
+      if @service_ping.save
+        render json: @service_ping, status: :created
+      else
+        render json: @service_ping.errors, status: :unprocessable_entity
+      end
+    end
+
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_user
@@ -82,7 +98,7 @@ module Api::V1
 
       # Only allow a trusted parameter "white list" through.
       def user_params
-        params.require(:user).permit(:fb_user_id, :fb_access_token, :router_id, :local_ip, :local_port, :external_address,
+        params.require(:user).permit(:connection_instance, :fb_user_id, :fb_access_token, :router_id, :local_ip, :local_port, :external_address,
                                      :latitude, :longitude,
                                      user_profile_attributes: [:first_name, :middle_name, :last_name,
                                                                :fb_link, :email, :picture, :gender,

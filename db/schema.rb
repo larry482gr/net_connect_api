@@ -11,13 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160518144748) do
+ActiveRecord::Schema.define(version: 20160525220422) do
 
   create_table "routers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "ssid"
     t.string   "mac_address"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+  end
+
+  create_table "service_pings", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer  "user_id"
+    t.integer  "router_id"
+    t.string   "connection_instance"
+    t.datetime "created_at"
+    t.index ["router_id"], name: "index_service_pings_on_router_id", using: :btree
+    t.index ["user_id"], name: "index_service_pings_on_user_id", using: :btree
   end
 
   create_table "user_profiles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -57,6 +66,8 @@ ActiveRecord::Schema.define(version: 20160518144748) do
     t.index ["router_id"], name: "index_users_on_router_id", using: :btree
   end
 
+  add_foreign_key "service_pings", "routers"
+  add_foreign_key "service_pings", "users"
   add_foreign_key "user_profiles", "users"
   add_foreign_key "users", "routers"
 end

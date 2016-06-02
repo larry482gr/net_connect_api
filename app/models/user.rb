@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   belongs_to :router, optional: true
   has_one :user_profile
+  has_many :service_pings
 
   validates_uniqueness_of :api_token
   validates_uniqueness_of :fb_user_id
