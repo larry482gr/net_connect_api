@@ -46,7 +46,7 @@ module Api::V1
       set_user_router (@user)
 
       unless @user.valid?
-        user = User.find_by(@params[:fb_user_id])
+        user = User.find_by(fb_user_id: @params[:fb_user_id])
         render json: user, status: :ok, location: v1_user_path(user.id) and return
       end
 
