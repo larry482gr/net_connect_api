@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160525220422) do
+ActiveRecord::Schema.define(version: 20160622055344) do
 
   create_table "routers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "ssid"
@@ -53,13 +53,10 @@ ActiveRecord::Schema.define(version: 20160525220422) do
     t.string   "fb_user_id"
     t.string   "fb_access_token"
     t.integer  "router_id"
-    t.string   "local_ip"
-    t.integer  "local_port"
-    t.string   "external_address"
-    t.decimal  "latitude",         precision: 18, scale: 15
-    t.decimal  "longitude",        precision: 18, scale: 15
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
+    t.decimal  "latitude",        precision: 18, scale: 15
+    t.decimal  "longitude",       precision: 18, scale: 15
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
     t.index ["api_token"], name: "index_users_on_api_token", unique: true, using: :btree
     t.index ["fb_access_token"], name: "index_users_on_fb_access_token", unique: true, using: :btree
     t.index ["fb_user_id"], name: "index_users_on_fb_user_id", unique: true, using: :btree

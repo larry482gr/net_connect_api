@@ -12,7 +12,7 @@ module Api::V1
 
     def current_network_users
       @users = @current_user.router.users.joins(:user_profile)
-                   .select(:fb_user_id, :local_ip, :local_port, :external_address, :latitude, :longitude,
+                   .select(:fb_user_id, :latitude, :longitude,
                            'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
                            'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
                    .where.not(id: @current_user.id)
@@ -26,7 +26,7 @@ module Api::V1
         @users = []
       else
         @users = router.users.joins(:user_profile)
-                     .select(:fb_user_id, :local_ip, :local_port, :external_address, :latitude, :longitude,
+                     .select(:fb_user_id, :latitude, :longitude,
                              'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
                              'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
       end
@@ -98,7 +98,7 @@ module Api::V1
 
       # Only allow a trusted parameter "white list" through.
       def user_params
-        params.require(:user).permit(:connection_instance, :fb_user_id, :fb_access_token, :router_id, :local_ip, :local_port, :external_address,
+        params.require(:user).permit(:connection_instance, :fb_user_id, :fb_access_token, :router_id,
                                      :latitude, :longitude,
                                      user_profile_attributes: [:first_name, :middle_name, :last_name,
                                                                :fb_link, :email, :picture, :gender,
