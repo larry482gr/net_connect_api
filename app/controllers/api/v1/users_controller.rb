@@ -1,7 +1,7 @@
 module Api::V1
   class UsersController < ApiController
     before_action :set_user, only: [:show]
-    before_action :authenticate, except: [:unregistered_network_users, :create]
+    before_action :authenticate, except: [:unregistered_nearby_users, :create]
 
     # GET /users
     def index
@@ -10,22 +10,41 @@ module Api::V1
       render json: @users
     end
 
-    def current_network_users
-      @users = @current_user.router.users.joins(:user_profile)
-                   .select(:fb_user_id, :latitude, :longitude,
-                           'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
-                           'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
-                   .where.not(id: @current_user.id)
+    def nearby_users
+      # User.all.joins(:user_profile)
+      # TODO Refactor this and send user discovery methods to model or an independent module
+
+      if @current_user.geocoded?
+        distance = 0.020 # 20 meters
+        center_point = [@current_user.latitude, @current_user.longitude]
+        box = Geocoder::Calculations.bounding_box(center_point, distance, units: :km)
+        Venue.within_bounding_box(box)
+
+        @users = @current_user.router.users
+                     .or(User.within_bounding_box(box))
+                     .joins(:user_profile)
+                     .select(:fb_user_id, :latitude, :longitude,
+                             'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
+                             'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
+                     .where.not(id: @current_user.id)
+      else
+        @users = @current_user.router.users
+                     .joins(:user_profile)
+                     .select(:fb_user_id, :latitude, :longitude,
+                             'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
+                             'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
+                     .where.not(id: @current_user.id)
+      end
 
       render json: @users
     end
 
-    def unregistered_network_users
+    def unregistered_nearby_users
       router = Router.find_by(ssid: params[:ssid], mac_address: params[:mac_address])
       if router.nil?
         @users = []
       else
-        @users = router.users.joins(:user_profile)
+        @users = router.users.joins(:user_profile) # User.all.joins(:user_profile)
                      .select(:fb_user_id, :latitude, :longitude,
                              'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
                              'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
@@ -108,12 +127,14 @@ module Api::V1
       end
 
       def set_user_router (user)
-        return if @params[:router_attributes].nil? or @params[:router_attributes][:mac_address].nil?
-
-        router = Router.find_by(mac_address: @params[:router_attributes][:mac_address])
-        unless router.nil?
-          @params.delete(:router_attributes)
-          user.router = router
+        if @params[:router_attributes].nil? or @params[:router_attributes][:mac_address].nil?
+          user.router = nil
+        else
+          router = Router.find_by(mac_address: @params[:router_attributes][:mac_address])
+          unless router.nil?
+            @params.delete(:router_attributes)
+            user.router = router
+          end
         end
       end
   end

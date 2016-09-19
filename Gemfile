@@ -23,6 +23,8 @@ gem 'puma'
 # To protect our API from DDoS, brute force attacks, hammering, or even to monetize with paid usage limits
 gem 'rack-attack'
 
+gem 'geocoder'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

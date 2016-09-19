@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -11,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160622055344) do
+ActiveRecord::Schema.define(version: 20160916134409) do
 
   create_table "routers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "ssid"
@@ -60,6 +59,7 @@ ActiveRecord::Schema.define(version: 20160622055344) do
     t.index ["api_token"], name: "index_users_on_api_token", unique: true, using: :btree
     t.index ["fb_access_token"], name: "index_users_on_fb_access_token", unique: true, using: :btree
     t.index ["fb_user_id"], name: "index_users_on_fb_user_id", unique: true, using: :btree
+    t.index ["latitude", "longitude"], name: "index_users_on_latitude_and_longitude", using: :btree
     t.index ["router_id"], name: "index_users_on_router_id", using: :btree
   end
 

@@ -11,8 +11,8 @@ Rails.application.routes.draw do
           resource :users, only: [:update, :destroy] do
             post :service_ping
           end
-          get 'current_network_users' => 'users#current_network_users', as: :current_network_users
-          get 'unregistered_network_users/:ssid/:mac_address' => 'users#unregistered_network_users', as: :unregistered_network_users
+          get 'nearby_users' => 'users#nearby_users', as: :nearby_users
+          get 'unregistered_nearby_users/:ssid/:mac_address' => 'users#unregistered_nearby_users', as: :unregistered_nearby_users
         end
     end
   #end
