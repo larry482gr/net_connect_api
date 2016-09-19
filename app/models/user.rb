@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   include Tokenable
 
+  reverse_geocoded_by :latitude, :longitude
+
   belongs_to :router, optional: true
   has_one :user_profile
   has_many :service_pings

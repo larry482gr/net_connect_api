@@ -18,10 +18,9 @@ module Api::V1
         distance = 0.020 # 20 meters
         center_point = [@current_user.latitude, @current_user.longitude]
         box = Geocoder::Calculations.bounding_box(center_point, distance, units: :km)
-        Venue.within_bounding_box(box)
 
         @users = @current_user.router.users
-                     .or(User.within_bounding_box(box))
+                     .or(User.geocoded.within_bounding_box(box))
                      .joins(:user_profile)
                      .select(:fb_user_id, :latitude, :longitude,
                              'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
