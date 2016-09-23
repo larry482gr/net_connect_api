@@ -113,7 +113,10 @@ module Api::V1
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_user
-        @user = User.find_by(fb_user_id: params[:id])
+        @user = User.find_by(fb_user_id: params[:id]).joins(:user_profile) # User.all.joins(:user_profile)
+                    .select(:fb_user_id, :latitude, :longitude,
+                            'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
+                            'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
       end
 
       # Only allow a trusted parameter "white list" through.
