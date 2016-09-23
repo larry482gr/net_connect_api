@@ -19,20 +19,22 @@ module Api::V1
         center_point = [@current_user.latitude, @current_user.longitude]
         box = Geocoder::Calculations.bounding_box(center_point, distance, units: :km)
 
-        @users = @current_user.router.users
+        @users = User.where.not(router_id: nil).where(router_id: @current_user.router)
                      .or(User.geocoded.within_bounding_box(box))
                      .joins(:user_profile)
                      .select(:fb_user_id, :latitude, :longitude,
                              'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
                              'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
                      .where.not(id: @current_user.id)
-      else
+      elsif !@current_user.router.nil?
         @users = @current_user.router.users
                      .joins(:user_profile)
                      .select(:fb_user_id, :latitude, :longitude,
                              'user_profiles.first_name', 'user_profiles.middle_name', 'user_profiles.last_name',
                              'user_profiles.picture', 'user_profiles.gender', 'user_profiles.age_min', 'user_profiles.age_max')
                      .where.not(id: @current_user.id)
+      else
+        @users = []
       end
 
       render json: @users
