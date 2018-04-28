@@ -45,3 +45,7 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+gem 'loofah', '~> 2.2.1'
+gem 'nokogiri', '~> 1.8.1'
+gem 'rails-html-sanitizer', '~> 1.0.4'

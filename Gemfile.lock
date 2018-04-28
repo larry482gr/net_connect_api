@@ -157,10 +157,13 @@ DEPENDENCIES
   factory_girl_rails
   geocoder
   listen (~> 3.0.5)
+  loofah (~> 2.2.1)
   mysql2 (>= 0.3.18, < 0.5)
+  nokogiri (~> 1.8.1)
   puma (~> 3.10)
   rack-attack
   rails (>= 5.2.0)
+  rails-html-sanitizer (~> 1.0.4)
   rspec-rails (= 3.1.0)
   spring
   spring-watcher-listen (~> 2.0.0)
