@@ -13,6 +13,10 @@ gem 'puma', '>= 3.10'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '>= 3.1.7'
 
+gem 'loofah', '>= 2.2.1'
+gem 'nokogiri', '>= 1.8.1'
+gem 'rails-html-sanitizer', '>= 1.0.4'
+
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
@@ -44,7 +48,3 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-
-# gem 'loofah', '>= 2.2.1'
-# gem 'nokogiri', '>= 1.8.1'
-# gem 'rails-html-sanitizer', '>= 1.0.4'
